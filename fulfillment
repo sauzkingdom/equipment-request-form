@@ -3,7 +3,7 @@
 <head>
   <base target="_top">
   <meta charset="utf-8">
-  <title>Band Connect — Order Fulfillment</title>
+  <title>Bayatronics Order Fulfillment</title>
   <style>
     :root { --purple:#5f4bd8; --teal:#45bdb2; --ink:#211d30; --soft:#6f6883; --line:#e5e1f0; --field:#f7f5fc; }
     * { box-sizing:border-box; }
@@ -86,7 +86,7 @@
   </div></div>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw802oHVBnlsA0pdNJ21hkw3Naub2eN23kcYgn5h9EPU6SquKnDPPbqTLlImQNsjtjf/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxphWRscuXonv9zMQKccCguQ-U5EFEVMa67I_OqPdJa84DkizoeQWjnJLySosuNCgTDsg/exec";
     var CURRENT_ORDER = null;
 
     function value(id){ return document.getElementById(id).value.trim(); }
