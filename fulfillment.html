@@ -5,146 +5,262 @@
   <meta charset="utf-8">
   <title>Bayatronics Order Fulfillment</title>
   <style>
-    :root { --purple:#5f4bd8; --teal:#45bdb2; --ink:#211d30; --soft:#6f6883; --line:#e5e1f0; --field:#f7f5fc; }
-    * { box-sizing:border-box; }
-    body { margin:0; min-height:100vh; padding:32px 14px; background:linear-gradient(145deg,#241a49,#3b2d70); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; color:var(--ink); }
-    .wrap { max-width:760px; margin:auto; }
-    .card { background:#fff; border-radius:20px; padding:30px; box-shadow:0 22px 70px rgba(0,0,0,.28); }
-    .brand { color:var(--purple); font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-    h1 { margin:8px 0 5px; font-size:27px; }
-    .sub { margin:0 0 24px; color:var(--soft); font-size:14px; }
-    label { display:block; margin:15px 0 6px; font-size:13px; font-weight:700; }
-    input,select { width:100%; padding:12px; border:1px solid var(--line); border-radius:9px; background:var(--field); color:var(--ink); font:14px inherit; }
-    input:focus,select:focus { outline:none; border-color:var(--purple); box-shadow:0 0 0 3px rgba(95,75,216,.12); }
-    button { border:0; border-radius:10px; padding:13px 18px; background:var(--purple); color:#fff; font-size:14px; font-weight:750; cursor:pointer; }
-    button:disabled { opacity:.5; cursor:default; }
-    .search { display:grid; grid-template-columns:1fr auto; gap:10px; align-items:end; }
-    .search button { min-width:120px; }
-    .section { margin-top:24px; padding-top:18px; border-top:1px solid var(--line); }
-    .section-title { margin-bottom:12px; color:var(--purple); font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; }
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .summary { display:grid; grid-template-columns:1fr 1fr; gap:10px 18px; }
-    .item { padding:10px 12px; border:1px solid var(--line); border-radius:9px; background:var(--field); }
-    .item small { display:block; margin-bottom:3px; color:var(--soft); }
-    .wide { grid-column:1/-1; }
-    .bands { display:flex; flex-wrap:wrap; gap:8px; }
-    .band { padding:7px 10px; border-radius:999px; background:#efedfd; color:#493bb1; font-size:13px; font-weight:700; }
-    .check { display:flex; gap:10px; align-items:flex-start; margin:20px 0; padding:13px; border:1px solid var(--line); border-radius:10px; background:var(--field); }
-    .check input { width:auto; margin-top:3px; }
-    .check label { margin:0; }
-    #submitBtn { width:100%; }
-    .hidden { display:none; }
-    .message { margin-top:16px; padding:14px; border-radius:10px; font-size:14px; }
-    .error { background:#fdeaea; color:#8e1c1c; }
-    .success { background:#e3f4ec; color:#175b3c; }
-    @media(max-width:620px) { body{padding:14px 9px}.card{padding:23px 17px}.grid,.summary,.search{grid-template-columns:1fr}.wide{grid-column:auto}.search button{width:100%} }
+    :root { 
+      --purple: #5f4bd8; 
+      --teal: #45bdb2; 
+      --ink: #211d30; 
+      --soft: #6f6883; 
+      --line: #e5e1f0; 
+      --field: #f7f5fc; 
+    }
+    * { box-sizing: border-box; }
+    body { 
+      margin: 0; 
+      min-height: 100vh; 
+      padding: 32px 14px; 
+      background: linear-gradient(145deg, #241a49, #3b2d70); 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+      color: var(--ink); 
+    }
+    .wrap { max-width: 760px; margin: auto; }
+    .card { 
+      background: #fff; 
+      border-radius: 20px; 
+      padding: 30px; 
+      box-shadow: 0 22px 70px rgba(0,0,0,.28); 
+    }
+    .brand { 
+      color: var(--purple); 
+      font-size: 12px; 
+      font-weight: 800; 
+      letter-spacing: .08em; 
+      text-transform: uppercase; 
+    }
+    h1 { margin: 8px 0 5px; font-size: 27px; }
+    .sub { margin: 0 0 24px; color: var(--soft); font-size: 14px; }
+    label { display: block; margin: 15px 0 6px; font-size: 13px; font-weight: 700; }
+    input, select { 
+      width: 100%; 
+      padding: 12px; 
+      border: 1px solid var(--line); 
+      border-radius: 9px; 
+      background: var(--field); 
+      color: var(--ink); 
+      font: 14px inherit; 
+    }
+    input:focus, select:focus { 
+      outline: none; 
+      border-color: var(--purple); 
+      box-shadow: 0 0 0 3px rgba(95,75,216,.12); 
+    }
+    button { 
+      border: 0; 
+      border-radius: 10px; 
+      padding: 13px 18px; 
+      background: var(--purple); 
+      color: #fff; 
+      font-size: 14px; 
+      font-weight: 750; 
+      cursor: pointer; 
+    }
+    button:disabled { opacity: .5; cursor: default; }
+    .search { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: end; }
+    .search button { min-width: 120px; }
+    .section { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--line); }
+    .section-title { 
+      margin-bottom: 12px; 
+      color: var(--purple); 
+      font-size: 12px; 
+      font-weight: 800; 
+      letter-spacing: .08em; 
+      text-transform: uppercase; 
+    }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .summary { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; }
+    .item { padding: 10px 12px; border: 1px solid var(--line); border-radius: 9px; background: var(--field); }
+    .item small { display: block; margin-bottom: 3px; color: var(--soft); }
+    .wide { grid-column: 1 / -1; }
+    .bands { display: flex; flex-wrap: wrap; gap: 8px; }
+    .band { padding: 7px 10px; border-radius: 999px; background: #efedfd; color: #493bb1; font-size: 13px; font-weight: 700; }
+    .check { 
+      display: flex; 
+      gap: 10px; 
+      align-items: flex-start; 
+      margin: 20px 0; 
+      padding: 13px; 
+      border: 1px solid var(--line); 
+      border-radius: 10px; 
+      background: var(--field); 
+    }
+    .check input { width: auto; margin-top: 3px; }
+    .check label { margin: 0; }
+    #submitBtn { width: 100%; }
+    .hidden { display: none; }
+    .message { margin-top: 16px; padding: 14px; border-radius: 10px; font-size: 14px; }
+    .error { background: #fdeaea; color: #8e1c1c; }
+    .success { background: #e3f4ec; color: #175b3c; }
+    @media(max-width: 620px) { 
+      body { padding: 14px 9px; }
+      .card { padding: 23px 17px; }
+      .grid, .summary, .search { grid-template-columns: 1fr; }
+      .wide { grid-column: auto; }
+      .search button { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <div class="wrap"><div class="card">
-    <div class="brand">Band Connect × Bayatronics</div>
-    <h1>Order Fulfillment</h1>
-    <p class="sub">Find an order, verify its shipping details, and submit the package for label creation.</p>
+  <div class="wrap">
+    <div class="card">
+      <div class="brand">Band Connect × Bayatronics</div>
+      <h1>Order Fulfillment</h1>
+      <p class="sub">Find an order, verify its shipping details, and submit the package for label creation.</p>
 
-    <div class="search">
-      <div><label for="orderNumber">Order number</label><input id="orderNumber" placeholder="BC-20260812-AB12"></div>
-      <button id="findBtn" type="button" onclick="findOrder()">Find order</button>
-    </div>
-    <div id="message" class="hidden"></div>
+      <div class="search">
+        <div>
+          <label for="orderNumber">Order number</label>
+          <input id="orderNumber" placeholder="BC-20260812-AB12">
+        </div>
+        <button id="findBtn" type="button" onclick="findOrder()">Find order</button>
+      </div>
+      <div id="message" class="hidden"></div>
 
-    <div id="orderPanel" class="hidden">
-      <div class="section">
-        <div class="section-title">Order summary</div>
-        <div class="summary">
-          <div class="item"><small>Order ticket</small><strong id="sOrder"></strong></div>
-          <div class="item"><small>Submitted</small><span id="sSubmitted"></span></div>
-          <div class="item"><small>Organization</small><span id="sOrganization"></span></div>
-          <div class="item"><small>Clinic</small><span id="sClinic"></span></div>
-          <div class="item wide"><small>Shipping address</small><span id="sAddress"></span></div>
-          <div class="item wide"><small>Designated contact</small><span id="sContact"></span></div>
-          <div class="item"><small>Type</small><span id="sType"></span></div>
-          <div class="item"><small>Kits requested</small><span id="sKits"></span></div>
-          <div class="item wide"><small>Band bundles</small><div id="sBands" class="bands"></div></div>
-          <div class="item wide"><small>Request notes</small><span id="sNotes"></span></div>
+      <div id="orderPanel" class="hidden">
+        <div class="section">
+          <div class="section-title">Order summary</div>
+          <div class="summary">
+            <div class="item"><small>Order ticket</small><strong id="sOrder"></strong></div>
+            <div class="item"><small>Submitted</small><span id="sSubmitted"></span></div>
+            <div class="item"><small>Organization</small><span id="sOrganization"></span></div>
+            <div class="item"><small>Clinic</small><span id="sClinic"></span></div>
+            <div class="item wide"><small>Shipping address</small><span id="sAddress"></span></div>
+            <div class="item wide"><small>Designated contact</small><span id="sContact"></span></div>
+            <div class="item"><small>Type</small><span id="sType"></span></div>
+            <div class="item"><small>Kits requested</small><span id="sKits"></span></div>
+            <div class="item wide"><small>Band bundles</small><div id="sBands" class="bands"></div></div>
+            <div class="item wide"><small>Request notes</small><span id="sNotes"></span></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Package details</div>
+          <div class="grid">
+            <div>
+              <label for="packageWeight">Package weight</label>
+              <input id="packageWeight" type="number" min="0.01" step="0.01">
+            </div>
+            <div>
+              <label for="weightUnit">Weight unit</label>
+              <select id="weightUnit"><option value="lb">lb</option><option value="kg">kg</option></select>
+            </div>
+            <div>
+              <label for="boxLength">Box length</label>
+              <input id="boxLength" type="number" min="0.01" step="0.01">
+            </div>
+            <div>
+              <label for="boxWidth">Box width</label>
+              <input id="boxWidth" type="number" min="0.01" step="0.01">
+            </div>
+            <div>
+              <label for="boxHeight">Box height</label>
+              <input id="boxHeight" type="number" min="0.01" step="0.01">
+            </div>
+            <div>
+              <label for="dimensionUnit">Dimension unit</label>
+              <select id="dimensionUnit"><option value="in">inches</option><option value="cm">centimeters</option></select>
+            </div>
+          </div>
+          <div class="check">
+            <input id="confirmed" type="checkbox">
+            <label for="confirmed">I verified the order and package information. Trigger label creation.</label>
+          </div>
+          <button id="submitBtn" type="button" onclick="submitRequest()">Submit for label creation</button>
         </div>
       </div>
-
-      <div class="section">
-        <div class="section-title">Package details</div>
-        <div class="grid">
-          <div><label for="packageWeight">Package weight</label><input id="packageWeight" type="number" min="0.01" step="0.01"></div>
-          <div><label for="weightUnit">Weight unit</label><select id="weightUnit"><option value="lb">lb</option><option value="kg">kg</option></select></div>
-          <div><label for="boxLength">Box length</label><input id="boxLength" type="number" min="0.01" step="0.01"></div>
-          <div><label for="boxWidth">Box width</label><input id="boxWidth" type="number" min="0.01" step="0.01"></div>
-          <div><label for="boxHeight">Box height</label><input id="boxHeight" type="number" min="0.01" step="0.01"></div>
-          <div><label for="dimensionUnit">Dimension unit</label><select id="dimensionUnit"><option value="in">inches</option><option value="cm">centimeters</option></select></div>
-        </div>
-        <div class="check"><input id="confirmed" type="checkbox"><label for="confirmed">I verified the order and package information. Trigger label creation.</label></div>
-        <button id="submitBtn" type="button" onclick="submitRequest()">Submit for label creation</button>
-      </div>
     </div>
-  </div></div>
+  </div>
 
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxphWRscuXonv9zMQKccCguQ-U5EFEVMa67I_OqPdJa84DkizoeQWjnJLySosuNCgTDsg/exec";
     var CURRENT_ORDER = null;
 
-    function value(id){ return document.getElementById(id).value.trim(); }
-    function showMessage(text,type){ var box=document.getElementById('message');box.textContent=text;box.className='message '+type; }
-    function clearMessage(){ document.getElementById('message').className='hidden'; }
+    function value(id) { return document.getElementById(id).value.trim(); }
+    function showMessage(text, type) { 
+      var box = document.getElementById('message');
+      box.textContent = text;
+      box.className = 'message ' + type; 
+    }
+    function clearMessage() { document.getElementById('message').className = 'hidden'; }
 
-    function findOrder(){
+    function findOrder() {
       clearMessage();
       document.getElementById('orderPanel').classList.add('hidden');
-      var button=document.getElementById('findBtn');button.disabled=true;button.textContent='Searching…';
+      var button = document.getElementById('findBtn');
+      button.disabled = true;
+      button.textContent = 'Searching…';
 
       fetch(SCRIPT_URL + '?action=findOrder&orderId=' + encodeURIComponent(value('orderNumber')))
         .then(res => res.json())
         .then(data => {
-          button.disabled=false; button.textContent='Find order';
-          if(data.status === 'error') throw new Error(data.message);
+          button.disabled = false; 
+          button.textContent = 'Find order';
+          if (data.status === 'error') throw new Error(data.message);
           CURRENT_ORDER = data.order || data;
           renderOrder(CURRENT_ORDER);
         })
         .catch(error => {
-          button.disabled=false; button.textContent='Find order';
+          button.disabled = false; 
+          button.textContent = 'Find order';
           showMessage(error.message || 'Order not found', 'error');
         });
     }
 
-    function renderOrder(order){
-      document.getElementById('sOrder').textContent=order.orderId;
-      document.getElementById('sSubmitted').textContent=order.submittedAt||'—';
-      document.getElementById('sOrganization').textContent=order.organization||'—';
-      document.getElementById('sClinic').textContent=order.location||order.clinicKey||'—';
-      document.getElementById('sAddress').textContent=[order.street1,order.street2,[order.city,order.state,order.postalCode].filter(Boolean).join(' '),order.country].filter(Boolean).join(', ');
-      document.getElementById('sContact').textContent=[order.contactName,order.contactEmail,order.contactPhone].filter(Boolean).join(' • ');
-      document.getElementById('sType').textContent=order.type||'—';
-      document.getElementById('sKits').textContent=order.kits;
-      document.getElementById('sNotes').textContent=order.notes||'None';
-      var bands=document.getElementById('sBands');bands.innerHTML='';
-      if(!order.bands || !order.bands.length){ bands.textContent='No band bundles requested'; }
-      else {
-        order.bands.forEach(function(b){var el=document.createElement('span');el.className='band';el.textContent=b.name+' × '+b.quantity;bands.appendChild(el);});
+    function renderOrder(order) {
+      document.getElementById('sOrder').textContent = order.orderId;
+      document.getElementById('sSubmitted').textContent = order.submittedAt || '—';
+      document.getElementById('sOrganization').textContent = order.organization || '—';
+      document.getElementById('sClinic').textContent = order.location || order.clinicKey || '—';
+      document.getElementById('sAddress').textContent = [order.street1, order.street2, [order.city, order.state, order.postalCode].filter(Boolean).join(' '), order.country].filter(Boolean).join(', ');
+      document.getElementById('sContact').textContent = [order.contactName, order.contactEmail, order.contactPhone].filter(Boolean).join(' • ');
+      document.getElementById('sType').textContent = order.type || '—';
+      document.getElementById('sKits').textContent = order.kits;
+      document.getElementById('sNotes').textContent = order.notes || 'None';
+      
+      var bands = document.getElementById('sBands');
+      bands.innerHTML = '';
+      if (!order.bands || !order.bands.length) { 
+        bands.textContent = 'No band bundles requested'; 
+      } else {
+        order.bands.forEach(function(b) {
+          var el = document.createElement('span');
+          el.className = 'band';
+          el.textContent = b.name + ' × ' + b.quantity;
+          bands.appendChild(el);
+        });
       }
       document.getElementById('orderPanel').classList.remove('hidden');
     }
 
-    function submitRequest(){
-      if(!CURRENT_ORDER){showMessage('Find an order first.','error');return;}
-      var payload={
+    function submitRequest() {
+      if (!CURRENT_ORDER) {
+        showMessage('Find an order first.', 'error');
+        return;
+      }
+      var payload = {
         action: 'submitLabelRequest',
-        orderId:CURRENT_ORDER.orderId,
-        packageWeight:value('packageWeight'),
-        weightUnit:value('weightUnit'),
-        boxLength:value('boxLength'),
-        boxWidth:value('boxWidth'),
-        boxHeight:value('boxHeight'),
-        dimensionUnit:value('dimensionUnit'),
-        confirmed:document.getElementById('confirmed').checked
+        orderId: CURRENT_ORDER.orderId,
+        packageWeight: value('packageWeight'),
+        weightUnit: value('weightUnit'),
+        boxLength: value('boxLength'),
+        boxWidth: value('boxWidth'),
+        boxHeight: value('boxHeight'),
+        dimensionUnit: value('dimensionUnit'),
+        confirmed: document.getElementById('confirmed').checked
       };
 
-      var button=document.getElementById('submitBtn');button.disabled=true;button.textContent='Submitting…';clearMessage();
+      var button = document.getElementById('submitBtn');
+      button.disabled = true;
+      button.textContent = 'Submitting…';
+      clearMessage();
 
       fetch(SCRIPT_URL, {
         method: 'POST',
@@ -152,18 +268,23 @@
       })
       .then(res => res.json())
       .then(result => {
-        button.disabled=false;button.textContent='Submit for label creation';
-        if(result.status === 'error') throw new Error(result.message);
-        showMessage((result.message || 'Label request submitted.') + ' Order: ' + (result.orderId || CURRENT_ORDER.orderId),'success');
+        button.disabled = false;
+        button.textContent = 'Submit for label creation';
+        if (result.status === 'error') throw new Error(result.message);
+        showMessage((result.message || 'Label request submitted.') + ' Order: ' + (result.orderId || CURRENT_ORDER.orderId), 'success');
         document.getElementById('orderPanel').classList.add('hidden');
-        CURRENT_ORDER=null;
+        CURRENT_ORDER = null;
       })
       .catch(error => {
-        button.disabled=false;button.textContent='Submit for label creation';
-        showMessage(error.message,'error');
+        button.disabled = false;
+        button.textContent = 'Submit for label creation';
+        showMessage(error.message, 'error');
       });
     }
-    document.getElementById('orderNumber').addEventListener('keydown',function(event){if(event.key==='Enter')findOrder();});
+
+    document.getElementById('orderNumber').addEventListener('keydown', function(event) {
+      if (event.key === 'Enter') findOrder();
+    });
   </script>
 </body>
 </html>
