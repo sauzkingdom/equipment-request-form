@@ -1,486 +1,254 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <base target="_top">
-  <meta charset="utf-8">
-  <title>Band Connect — Equipment Request</title>
-  <style>
-    :root {
-      --bg: #2B2149;
-      --card: #FFFFFF;
-      --ink: #1F1B2E;
-      --soft: #6B6480;
-      --line: #E3DFF0;
-      --accent: #6B5CE7;
-      --accent2: #4FB8B0;
-      --field: #F7F5FC;
-      --locked: #E9E7F1;
-      --error: #9B1C1C;
+<script>
+  // Paste your Apps Script Web App URL here if hosted on GitHub Pages:
+  var WEB_APP_URL = "YOUR_DEPLOYED_WEB_APP_URL_HERE"; 
+  var DATA = null;
+
+  function value(id) {
+    return document.getElementById(id).value.trim();
+  }
+
+  function numOptions(select) {
+    select.innerHTML = '';
+    for (var i = 0; i <= 50; i++) {
+      var option = document.createElement('option');
+      option.value = i;
+      option.textContent = i;
+      select.appendChild(option);
     }
+    select.value = '0';
+  }
 
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      padding: 32px 16px;
-      background:
-        radial-gradient(circle at 15% 5%, rgba(107,92,231,.38), transparent 30%),
-        linear-gradient(155deg, #241b45, #382b68 58%, #17112e);
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    .wrap { max-width: 720px; margin: 0 auto; }
-    .card {
-      padding: 30px 30px 34px;
-      background: var(--card);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 22px;
-      box-shadow: 0 26px 75px rgba(0, 0, 0, .3);
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 13px;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: #efedfd;
-      color: #5144c4;
-      font-size: 11px;
-      font-weight: 750;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-    .brand-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); }
-    h1 { margin: 0 0 5px; font-size: 27px; letter-spacing: -.02em; }
-    .sub { margin: 0 0 24px; color: var(--soft); font-size: 14px; }
-    label { display: block; margin: 16px 0 6px; font-size: 13px; font-weight: 600; }
-    .hint { color: var(--soft); font-size: 12px; font-weight: 400; }
-    input, select, textarea {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid var(--line);
-      border-radius: 9px;
-      background: var(--field);
-      color: var(--ink);
-      font: 14px inherit;
-    }
-    input:focus, select:focus, textarea:focus {
-      border-color: var(--accent);
-      outline: none;
-      background: #fff;
-      box-shadow: 0 0 0 3px rgba(107,92,231,.11);
-    }
-    textarea { min-height: 64px; resize: vertical; }
-    .locked { background: var(--locked); color: var(--soft); cursor: not-allowed; }
-    .sec {
-      margin-top: 26px;
-      padding-top: 18px;
-      border-top: 1px solid var(--line);
-      color: var(--accent);
-      font-size: 12px;
-      letter-spacing: .08em;
-      text-transform: uppercase;
-    }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .bandgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 4px; }
-    .band {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 6px 10px;
-      border: 1px solid var(--line);
-      border-radius: 99px;
-      background: var(--field);
-    }
-    .band span { font-size: 13px; }
-    .band select { width: 70px; padding: 6px; }
-    button {
-      width: 100%;
-      margin-top: 26px;
-      padding: 14px;
-      border: 0;
-      border-radius: 11px;
-      background: linear-gradient(100deg, var(--accent), #7a6bec);
-      color: #FFFFFF;
-      cursor: pointer;
-      font-size: 15px;
-      font-weight: 700;
-      box-shadow: 0 99px 22px rgba(107,92,231,.25);
-    }
-    button:hover { background: linear-gradient(100deg, #5548c9, #6b5ce7); }
-    button:disabled { cursor: default; opacity: .5; }
-    .hidden { display: none; }
-    .ok {
-      margin-top: 20px;
-      padding: 18px;
-      border: 1px solid var(--accent2);
-      border-radius: 11px;
-      background: #E3F0E8;
-      color: #14301F;
-      text-align: center;
-    }
-    .ok b { font-size: 18px; }
-    #loading, #loadError { padding: 20px; font-size: 14px; text-align: center; }
-    #loading { color: var(--soft); }
-    #loadError { color: var(--error); }
-    .source {
-      display: inline-block;
-      margin-top: 9px;
-      padding: 6px 9px;
-      border-radius: 999px;
-      background: #efedfd;
-      color: #5144c4;
-      font-size: 11px;
-      font-weight: 700;
-    }
-    .source.manual { background: #fff3db; color: #875d09; }
-    @media (max-width: 620px) {
-      body { padding: 16px 10px; }
-      .card { padding: 24px 18px 28px; }
-      .row, .bandgrid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="brand"><span class="brand-dot"></span>Band Connect Operations</div>
-      <h1>Band Connect Equipment Request Form</h1>
-      <p class="sub">Select a clinic, enter the equipment quantities, and submit the request to fulfillment.</p>
+  function setContactLocked(locked) {
+    ['contact', 'contactEmail', 'contactPhone'].forEach(function (id) {
+      var field = document.getElementById(id);
+      field.readOnly = locked;
+      field.classList.toggle('locked', locked);
+    });
+    document.getElementById('contactHint').textContent = locked
+      ? 'This designated contact comes from Clinic Master and cannot be edited.'
+      : 'Enter the contact for this order. This unlisted clinic will not be added to Clinic Master.';
+  }
 
-      <div id="loading">Loading clinics…</div>
-      <div id="loadError" class="hidden"></div>
-
-      <div id="form" class="hidden">
-        <div class="sec">Clinic</div>
-        <label for="clinic">Clinic <span class="hint">— click to view the list or type to search</span></label>
-        <input id="clinic" list="clinicOptions" placeholder="Search or select a clinic…" autocomplete="off">
-        <datalist id="clinicOptions"></datalist>
-        <div id="clinicSource" class="source hidden"></div>
-
-        <div id="newClinicBox" class="hidden">
-          <div class="row">
-            <div>
-              <label for="newOrganization">Organization name</label>
-              <input id="newOrganization" placeholder="Complete Care">
-            </div>
-            <div>
-              <label for="newLocation">Clinic location</label>
-              <input id="newLocation" placeholder="Debary or Headquarters">
-            </div>
-          </div>
-          <label for="newStreet1">Street address</label>
-          <input id="newStreet1" placeholder="110 Pond Ct">
-          <label for="newStreet2">Suite/unit <span class="hint">— optional</span></label>
-          <input id="newStreet2" placeholder="Suite 103">
-          <div class="row">
-            <div>
-              <label for="newCity">City</label>
-              <input id="newCity" placeholder="Debary">
-            </div>
-            <div>
-              <label for="newState">State/Province</label>
-              <input id="newState" placeholder="Florida">
-            </div>
-          </div>
-          <div class="row">
-            <div>
-              <label for="newCountry">Country</label>
-              <input id="newCountry" value="United States">
-            </div>
-            <div>
-              <label for="newPostalCode">Postal code</label>
-              <input id="newPostalCode" placeholder="32713">
-            </div>
-          </div>
-        </div>
-
-        <div class="sec">Designated contact</div>
-        <p id="contactHint" class="hint">For a listed clinic, these fields come from Clinic Master and cannot be edited.</p>
-        <div class="row">
-          <div>
-            <label for="contact">Contact name</label>
-            <input id="contact" class="locked" readonly placeholder="Designated contact">
-          </div>
-          <div>
-            <label for="contactPhone">Contact phone</label>
-            <input id="contactPhone" class="locked" readonly type="tel" placeholder="Phone">
-          </div>
-        </div>
-        <label for="contactEmail">Contact email</label>
-        <input id="contactEmail" class="locked" readonly type="email" placeholder="name@example.com">
-
-        <div class="sec">Requestor</div>
-        <div class="row">
-          <div>
-            <label for="requestor">Your name</label>
-            <input id="requestor" placeholder="Who is placing this order">
-          </div>
-          <div>
-            <label for="requestorEmail">Your email</label>
-            <input id="requestorEmail" type="email" placeholder="Your email address">
-          </div>
-        </div>
-
-        <div class="sec">Kits</div>
-        <div class="row">
-          <div>
-            <label for="kitType">Kit type</label>
-            <select id="kitType">
-              <option value="">—</option>
-              <option>Upper Extremity</option>
-              <option>Lower Extremity</option>
-              <option>Bands</option>
-            </select>
-          </div>
-          <div>
-            <label for="kits">Kits requested</label>
-            <select id="kits" class="numsel"></select>
-          </div>
-        </div>
-
-        <div class="sec">Bands <span class="hint" style="text-transform:none;letter-spacing:0">— bundles; one bundle = five bands</span></div>
-        <div class="bandgrid" id="bandGrid"></div>
-
-        <div class="sec">Anything else</div>
-        <label for="notes">Notes</label>
-        <textarea id="notes" placeholder="Deadlines, special handling…"></textarea>
-
-        <button id="submitBtn" type="button" onclick="submitOrder()">Submit request</button>
-      </div>
-
-      <div id="done" class="ok hidden"></div>
-    </div>
-  </div>
-
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw802oHVBnlsA0pdNJ21hkw3Naub2eN23kcYgn5h9EPU6SquKnDPPbqTLlImQNsjtjf/exec";
-
-    var DATA = null;
-
-    function value(id) {
-      return document.getElementById(id).value.trim();
-    }
-
-    function numOptions(select) {
-      select.innerHTML = '';
-      for (var i = 0; i <= 50; i++) {
-        var option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        select.appendChild(option);
-      }
-      select.value = '0';
-    }
-
-    function setContactLocked(locked) {
-      ['contact', 'contactEmail', 'contactPhone'].forEach(function (id) {
-        var field = document.getElementById(id);
-        field.readOnly = locked;
-        field.classList.toggle('locked', locked);
-      });
-      document.getElementById('contactHint').textContent = locked
-        ? 'This designated contact comes from Clinic Master and cannot be edited.'
-        : 'Enter the contact for this order. This unlisted clinic will not be added to Clinic Master.';
-    }
-
-    function loadForm() {
-      fetch(SCRIPT_URL)
-        .then(function (response) { return response.json(); })
-        .then(function (data) {
-          DATA = data;
-          var clinicSelect = document.getElementById('clinic');
-          populateClinicOptions();
-
-          document.querySelectorAll('.numsel').forEach(numOptions);
-          var bandGrid = document.getElementById('bandGrid');
-          data.bands.forEach(function (bandName) {
-            var wrapper = document.createElement('div');
-            wrapper.className = 'band';
-            var label = document.createElement('span');
-            label.textContent = bandName;
-            var select = document.createElement('select');
-            select.id = 'band_' + bandName;
-            numOptions(select);
-            wrapper.appendChild(label);
-            wrapper.appendChild(select);
-            bandGrid.appendChild(wrapper);
-          });
-
-          clinicSelect.addEventListener('change', onClinicChange);
-          clinicSelect.addEventListener('input', function () {
-            var typedValue = this.value;
-            var isValidChoice = typedValue === 'My clinic is not listed' ||
-              DATA.clinics.some(function (clinic) { return clinic.key === typedValue; });
-            if (isValidChoice) onClinicChange();
-          });
-          document.getElementById('loading').classList.add('hidden');
-          document.getElementById('form').classList.remove('hidden');
+  function loadForm() {
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(renderForm)
+        .withFailureHandler(handleError)
+        .getFormData();
+    } else {
+      fetch(WEB_APP_URL + '?action=getFormData')
+        .then(function(res) { return res.json(); })
+        .then(function(res) {
+          if (res.status === 'success') renderForm(res.data);
+          else handleError(new Error(res.message));
         })
-        .catch(function (error) {
-          document.getElementById('loading').classList.add('hidden');
-          var box = document.getElementById('loadError');
-          box.textContent = 'Could not load Clinic Master: ' + error.message;
-          box.classList.remove('hidden');
-        });
+        .catch(handleError);
+    }
+  }
+
+  function renderForm(data) {
+    DATA = data;
+    populateClinicOptions();
+
+    document.querySelectorAll('.numsel').forEach(numOptions);
+    var bandGrid = document.getElementById('bandGrid');
+    data.bands.forEach(function (bandName) {
+      var wrapper = document.createElement('div');
+      wrapper.className = 'band';
+      var label = document.createElement('span');
+      label.textContent = bandName.replace('-', ' ');
+      var select = document.createElement('select');
+      select.id = 'band_' + bandName;
+      numOptions(select);
+      wrapper.appendChild(label);
+      wrapper.appendChild(select);
+      bandGrid.appendChild(wrapper);
+    });
+
+    var clinicSelect = document.getElementById('clinic');
+    clinicSelect.addEventListener('change', onClinicChange);
+    clinicSelect.addEventListener('input', function () {
+      var typedValue = this.value;
+      var isValidChoice = typedValue === 'My clinic is not listed' ||
+        DATA.clinics.some(function (clinic) { return clinic.key === typedValue; });
+      if (isValidChoice) onClinicChange();
+    });
+
+    document.getElementById('loading').classList.add('hidden');
+    document.getElementById('form').classList.remove('hidden');
+  }
+
+  function handleError(error) {
+    document.getElementById('loading').classList.add('hidden');
+    var box = document.getElementById('loadError');
+    box.textContent = 'Could not load Clinic Master: ' + error.message;
+    box.classList.remove('hidden');
+  }
+
+  function populateClinicOptions() {
+    var optionList = document.getElementById('clinicOptions');
+    optionList.innerHTML = '';
+    DATA.clinics.forEach(function (clinic) {
+      var option = document.createElement('option');
+      option.value = clinic.key;
+      optionList.appendChild(option);
+    });
+
+    var newOption = document.createElement('option');
+    newOption.value = 'My clinic is not listed';
+    optionList.appendChild(newOption);
+  }
+
+  function onClinicChange() {
+    var key = document.getElementById('clinic').value;
+    var isNew = key === 'My clinic is not listed';
+    var source = document.getElementById('clinicSource');
+    document.getElementById('newClinicBox').classList.toggle('hidden', !isNew);
+
+    document.getElementById('contact').value = '';
+    document.getElementById('contactEmail').value = '';
+    document.getElementById('contactPhone').value = '';
+
+    if (isNew) {
+      source.textContent = 'Manually entered — not saved to Clinic Master';
+      source.className = 'source manual';
+      setContactLocked(false);
+      return;
     }
 
-    function populateClinicOptions() {
-      var optionList = document.getElementById('clinicOptions');
-      optionList.innerHTML = '';
-      DATA.clinics.forEach(function (clinic) {
-        var option = document.createElement('option');
-        option.value = clinic.key;
-        optionList.appendChild(option);
-      });
-
-      var newOption = document.createElement('option');
-      newOption.value = 'My clinic is not listed';
-      optionList.appendChild(newOption);
+    setContactLocked(true);
+    if (!key) {
+      source.classList.add('hidden');
+      return;
     }
 
-    function onClinicChange() {
-      var key = document.getElementById('clinic').value;
-      var isNew = key === 'My clinic is not listed';
-      var source = document.getElementById('clinicSource');
-      document.getElementById('newClinicBox').classList.toggle('hidden', !isNew);
+    source.textContent = 'Approved Clinic Master record';
+    source.className = 'source';
 
-      document.getElementById('contact').value = '';
-      document.getElementById('contactEmail').value = '';
-      document.getElementById('contactPhone').value = '';
+    var clinic = DATA.clinics.find(function (item) { return item.key === key; });
+    if (!clinic) return;
 
-      if (isNew) {
-        source.textContent = 'Manually entered — not saved to Clinic Master';
-        source.className = 'source manual';
-        setContactLocked(false);
-        return;
-      }
+    document.getElementById('contact').value = clinic.contactName || '';
+    document.getElementById('contactEmail').value = clinic.contactEmail || '';
+    document.getElementById('contactPhone').value = clinic.contactPhone || '';
+  }
 
-      setContactLocked(true);
-      if (!key) {
-        source.classList.add('hidden');
-        return;
-      }
-
-      source.textContent = 'Approved Clinic Master record';
-      source.className = 'source';
-
-      var clinic = DATA.clinics.find(function (item) { return item.key === key; });
-      if (!clinic) return;
-
-      document.getElementById('contact').value = clinic.contact || '';
-      document.getElementById('contactEmail').value = clinic.email || '';
-      document.getElementById('contactPhone').value = clinic.phone || '';
+  function validateForm(isNew) {
+    var selectedClinic = document.getElementById('clinic').value;
+    if (!selectedClinic) return 'Please select a clinic.';
+    if (!isNew && !DATA.clinics.some(function (clinic) { return clinic.key === selectedClinic; })) {
+      return 'Select a clinic from the list, or choose “My clinic is not listed”.';
     }
 
-    function validateForm(isNew) {
-      var selectedClinic = document.getElementById('clinic').value;
-      if (!selectedClinic) return 'Please select a clinic.';
-      if (!isNew && !DATA.clinics.some(function (clinic) { return clinic.key === selectedClinic; })) {
-        return 'Select a clinic from the list, or choose “My clinic is not listed”.';
+    if (isNew) {
+      var required = [
+        ['newOrganization', 'Organization name'],
+        ['newLocation', 'Clinic location'],
+        ['newStreet1', 'Street address'],
+        ['newCity', 'City'],
+        ['newState', 'State/Province'],
+        ['newCountry', 'Country'],
+        ['newPostalCode', 'Postal code']
+      ];
+      for (var i = 0; i < required.length; i++) {
+        if (!value(required[i][0])) return required[i][1] + ' is required.';
       }
-
-      if (isNew) {
-        var required = [
-          ['newOrganization', 'Organization name'],
-          ['newLocation', 'Clinic location'],
-          ['newStreet1', 'Street address'],
-          ['newCity', 'City'],
-          ['newState', 'State/Province'],
-          ['newCountry', 'Country'],
-          ['newPostalCode', 'Postal code']
-        ];
-        for (var i = 0; i < required.length; i++) {
-          if (!value(required[i][0])) return required[i][1] + ' is required.';
-        }
-      }
-
-      if (!value('contact') || !value('contactEmail') || !value('contactPhone')) {
-        return isNew
-          ? 'Contact name, email, and phone are required.'
-          : 'This clinic has incomplete designated-contact details in Clinic Master.';
-      }
-      if (!value('requestor')) return 'Your name is required.';
-      if (!value('requestorEmail')) return 'Your email is required.';
-      if (!document.getElementById('requestorEmail').checkValidity()) return 'Enter a valid requestor email.';
-      if (!document.getElementById('contactEmail').checkValidity()) return 'Enter a valid contact email.';
-      if (!document.getElementById('kitType').value) return 'Select a request type.';
-
-      var total = Number(document.getElementById('kits').value);
-      DATA.bands.forEach(function (bandName) {
-        total += Number(document.getElementById('band_' + bandName).value);
-      });
-      if (total === 0) return 'Enter at least one requested item.';
-      return '';
     }
 
-    function submitOrder() {
-      var selectedClinic = document.getElementById('clinic').value;
-      var isNew = selectedClinic === 'My clinic is not listed';
-      var error = validateForm(isNew);
-      if (error) { alert(error); return; }
+    if (!value('contact') || !value('contactEmail') || !value('contactPhone')) {
+      return isNew
+        ? 'Contact name, email, and phone are required.'
+        : 'This clinic has incomplete designated-contact details in Clinic Master.';
+    }
+    if (!value('requestor')) return 'Your name is required.';
+    if (!value('requestorEmail')) return 'Your email is required.';
+    if (!document.getElementById('requestorEmail').checkValidity()) return 'Enter a valid requestor email.';
+    if (!document.getElementById('contactEmail').checkValidity()) return 'Enter a valid contact email.';
+    if (!document.getElementById('kitType').value) return 'Select a request type.';
 
-      var bands = {};
-      DATA.bands.forEach(function (bandName) {
-        bands[bandName] = document.getElementById('band_' + bandName).value;
-      });
+    var total = Number(document.getElementById('kits').value);
+    DATA.bands.forEach(function (bandName) {
+      total += Number(document.getElementById('band_' + bandName).value);
+    });
+    if (total === 0) return 'Enter at least one requested item.';
+    return '';
+  }
 
-      var payload = {
-        isNewClinic: isNew,
-        clinicKey: isNew ? '' : selectedClinic,
-        newClinic: isNew ? {
-          organization: value('newOrganization'),
-          location: value('newLocation'),
-          street1: value('newStreet1'),
-          street2: value('newStreet2'),
-          city: value('newCity'),
-          state: value('newState'),
-          country: value('newCountry'),
-          postalCode: value('newPostalCode')
-        } : null,
-        contact: value('contact'),
-        contactEmail: value('contactEmail'),
-        contactPhone: value('contactPhone'),
-        requestor: value('requestor'),
-        requestorEmail: value('requestorEmail'),
-        kitType: document.getElementById('kitType').value,
-        kits: document.getElementById('kits').value,
-        totes: 0,
-        bands: bands,
-        notes: value('notes')
-      };
+  function submitOrder() {
+    var selectedClinic = document.getElementById('clinic').value;
+    var isNew = selectedClinic === 'My clinic is not listed';
+    var error = validateForm(isNew);
+    if (error) { alert(error); return; }
 
-      var button = document.getElementById('submitBtn');
-      button.disabled = true;
-      button.textContent = 'Submitting…';
+    var bands = {};
+    DATA.bands.forEach(function (bandName) {
+      bands[bandName] = document.getElementById('band_' + bandName).value;
+    });
 
-      fetch(SCRIPT_URL, {
+    var payload = {
+      action: 'submitOrder',
+      isNewClinic: isNew,
+      clinicKey: isNew ? '' : selectedClinic,
+      newClinic: isNew ? {
+        organization: value('newOrganization'),
+        location: value('newLocation'),
+        street1: value('newStreet1'),
+        street2: value('newStreet2'),
+        city: value('newCity'),
+        state: value('newState'),
+        country: value('newCountry'),
+        postalCode: value('newPostalCode')
+      } : null,
+      contact: value('contact'),
+      contactEmail: value('contactEmail'),
+      contactPhone: value('contactPhone'),
+      requestor: value('requestor'),
+      requestorEmail: value('requestorEmail'),
+      kitType: document.getElementById('kitType').value,
+      kits: document.getElementById('kits').value,
+      bands: bands,
+      notes: value('notes')
+    };
+
+    var button = document.getElementById('submitBtn');
+    button.disabled = true;
+    button.textContent = 'Submitting…';
+
+    if (typeof google !== 'undefined' && google.script && google.script.run) {
+      google.script.run
+        .withSuccessHandler(showDone)
+        .withFailureHandler(function (err) {
+          button.disabled = false;
+          button.textContent = 'Submit request';
+          alert('Something went wrong: ' + err.message);
+        })
+        .submitOrder(payload);
+    } else {
+      fetch(WEB_APP_URL, {
         method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       })
-      .then(function (res) { return res.json(); })
-      .then(function (resData) {
-        if (resData.status === 'success' || resData.ok) {
-          document.getElementById('form').classList.add('hidden');
-          var done = document.getElementById('done');
-          var orderId = resData.result ? resData.result.orderId : resData.orderId;
-          done.innerHTML = '<b>Request received</b><br><br>Your order reference is<br><b>' +
-            orderId + '</b><br><br>Band Connect will confirm before shipping.';
-          done.classList.remove('hidden');
-        } else {
-          throw new Error(resData.message || 'Unknown server error');
-        }
+      .then(function(res) { return res.json(); })
+      .then(function(res) {
+        if (res.status === 'success') showDone(res);
+        else throw new Error(res.message);
       })
-      .catch(function (error) {
+      .catch(function(err) {
         button.disabled = false;
         button.textContent = 'Submit request';
-        alert('Something went wrong: ' + error.message);
+        alert('Something went wrong: ' + err.message);
       });
     }
+  }
 
-    loadForm();
-  </script>
-</body>
-</html>
+  function showDone(result) {
+    document.getElementById('form').classList.add('hidden');
+    var done = document.getElementById('done');
+    done.innerHTML = '<b>Request received</b><br><br>Your order reference is<br><b>' +
+      result.orderId + '</b><br><br>Band Connect will confirm before shipping.';
+    done.classList.remove('hidden');
+  }
+
+  loadForm();
+</script>
